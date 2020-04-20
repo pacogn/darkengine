@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+	
+	<Type Name="MindShake::CQuaternion">
+		<DisplayString>{x}, {y}, {z}, {w}</DisplayString>
+		<Expand>
+			<Item Name="x">x</Item>
+			<Item Name="y">y</Item>
+			<Item Name="z">z</Item>
+			<Item Name="w">w</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="MindShake::CVector2">
+		<DisplayString>{x}, {y}</DisplayString>
+		<Expand>
+			<Item Name="x">x</Item>
+			<Item Name="y">y</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="MindShake::CVector3">
+		<DisplayString>{x}, {y}, {z}</DisplayString>
+		<Expand>
+			<Item Name="x">x</Item>
+			<Item Name="y">y</Item>
+			<Item Name="z">z</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="MindShake::CVector4">
+		<DisplayString>{x}, {y}, {z}, {w}</DisplayString>
+		<Expand>
+			<Item Name="x">x</Item>
+			<Item Name="y">y</Item>
+			<Item Name="z">z</Item>
+			<Item Name="w">w</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="MindShake::CMatrix4_GL">
+	  <DisplayString>[{v[0]},{v[4]},{v[8]},{v[12]}] [{v[1]},{v[5]},{v[9]},{v[13]}]  [{v[2]},{v[6]},{v[10]},{v[14]}]  [{v[3]},{v[7]},{v[11]},{v[15]}]</DisplayString>
+	  <Expand>
+		  <Item Name="[0,0]">v[0]</Item>
+		  <Item Name="[1,0]">v[4]</Item>
+		  <Item Name="[2,0]">v[8]</Item>
+		  <Item Name="[3,0]">v[12]</Item>
+		  <Item Name="[0,1]">v[1]</Item>
+		  <Item Name="[1,1]">v[5]</Item>
+		  <Item Name="[2,1]">v[9]</Item>
+		  <Item Name="[3,1]">v[13]</Item>
+		  <Item Name="[0,2]">v[2]</Item>
+		  <Item Name="[1,2]">v[6]</Item>
+		  <Item Name="[2,2]">v[10]</Item>
+		  <Item Name="[3,2]">v[14]</Item>
+		  <Item Name="[0,3]">v[3]</Item>
+		  <Item Name="[1,3]">v[7]</Item>
+		  <Item Name="[2,3]">v[11]</Item>
+		  <Item Name="[3,3]">v[15]</Item>
+	  </Expand>
+	</Type>
+
+</AutoVisualizer>
