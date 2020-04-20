@@ -34,6 +34,8 @@ endif(NOT CMAKE_BUILD_TYPE)
 set(SRC_ENGINE_FILES
     src/engine/CCamera.cpp
     src/engine/CCamera.h
+    src/engine/CDrawer.cpp
+    src/engine/CDrawer.h
     src/engine/CMesh.cpp
     src/engine/CMesh.h
     src/engine/CRenderer.cpp

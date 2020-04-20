@@ -3,6 +3,8 @@
 #include <vector>
 #include <cstdint>
 
+#include <engine/CDrawer.h>
+
 class CWindow;
 
 using std::vector;
@@ -20,4 +22,6 @@ public:
 
 protected:
     CWindow *mWindow{nullptr};
+
+    // CDrawer drawer;
 };

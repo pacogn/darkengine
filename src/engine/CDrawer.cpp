@@ -4,6 +4,8 @@
 
 CDrawer::CDrawer(CWindow *window) {
     mWindow = window;
+    colorBuffer = mWindow->GetRenderer().GetColorBuffer();
+    resolution = mWindow->GetRenderer().GetWidth() * mWindow->GetRenderer().GetHeight();
 }
 
 CDrawer::~CDrawer() {
@@ -11,5 +13,5 @@ CDrawer::~CDrawer() {
 
 void
 CDrawer::Fill(uint32_t color) {
-    memset(mWindow, color, sizeof(uint32_t)*sizeof(mWindow));
+    memset(colorBuffer, color, sizeof(uint32_t) * resolution);
 }
