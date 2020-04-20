@@ -1,7 +1,7 @@
 #include "Stars.h"
 //-------------------------------------
-#include <engine/CWindow.h>
 #include <engine/CCamera.h>
+#include <engine/CWindow.h>
 //-------------------------------------
 #include <Math/random/FastRand2.h>
 #include <Common/Math/math_funcs.h>

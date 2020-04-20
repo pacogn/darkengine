@@ -71,10 +71,25 @@ add_executable(Exercise1
 )
 target_include_directories(Exercise1 PRIVATE src/exercise1)
 
+# Asteroids
+#--------------------------------------
+set(SRC_ASTEROIDS_FILES
+    src/asteroids/main.cpp
+    src/asteroids/Asteroids.h
+    src/asteroids/Asteroids.cpp
+)
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src/asteroids" FILES ${SRC_ASTEROIDS_FILES})
+
+add_executable(Asteroids
+    ${SRC_ASTEROIDS_FILES}
+)
+target_include_directories(Asteroids PRIVATE src/asteroids)
+
 # Organize Visual Studio Solution Folders
 #--------------------------------------
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_property(TARGET MindShake PROPERTY FOLDER "Libs") 
-set_property(TARGET minifb PROPERTY FOLDER "Libs") 
-set_property(TARGET engine PROPERTY FOLDER "Libs") 
-set_property(TARGET Exercise1 PROPERTY FOLDER "Exercises") 
+set_property(TARGET MindShake PROPERTY FOLDER "Libs")
+set_property(TARGET minifb PROPERTY FOLDER "Libs")
+set_property(TARGET engine PROPERTY FOLDER "Libs")
+set_property(TARGET Exercise1 PROPERTY FOLDER "Exercises")
+set_property(TARGET Asteroids PROPERTY FOLDER "Exercises")
