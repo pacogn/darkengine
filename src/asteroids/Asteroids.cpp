@@ -3,7 +3,7 @@
 
 using namespace MindShake;
 
-Asteroids::Asteroids(CWindow *window) {
+Asteroids::Asteroids(CWindow *window) : mDrawer(window) {
     mWindow = window;
     mWindow->AddOnEnterFrame(this, &Asteroids::OnEnterFrame);
 };
@@ -25,7 +25,5 @@ Asteroids::Animate(uint32_t *colorBuffer) {
 
 void
 Asteroids::Render(uint32_t *colorBuffer) {
-    CDrawer drawer(mWindow);
-
-    drawer.Fill(0x33);
+    mDrawer.Fill(0x7f);
 };

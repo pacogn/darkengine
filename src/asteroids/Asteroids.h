@@ -23,5 +23,5 @@ public:
 protected:
     CWindow *mWindow{nullptr};
 
-    // CDrawer drawer;
+    CDrawer mDrawer;
 };
