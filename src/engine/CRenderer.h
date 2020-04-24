@@ -19,6 +19,9 @@ public:
     float       GetAspectRatio() const      { return (mHeight > 0) ? float(mWidth)  / float(mHeight) : 1.0f; }
     float       GetAspectRatioInv() const   { return (mWidth  > 0) ? float(mHeight) / float(mWidth)  : 1.0f; }
 
+    bool        Draw(int32_t x, int32_t y, uint32_t color);
+    bool        SetPixel(int32_t x, int32_t y, uint32_t color);
+
 private:
                 CRenderer(uint32_t width, uint32_t height);
                 CRenderer(const CRenderer &)    = delete;

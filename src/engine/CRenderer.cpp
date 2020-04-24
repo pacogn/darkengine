@@ -26,3 +26,18 @@ void
 CRenderer::Clear(uint8_t i) {
     memset(mColorBuffer, i, mWidth * mHeight * 4);
 }
+
+//-------------------------------------
+bool
+CRenderer::Draw(int32_t x, int32_t y, uint32_t color)
+{
+    return SetPixel(x, y, color);
+};
+
+//-------------------------------------
+bool
+CRenderer::SetPixel(int32_t x, int32_t y, uint32_t color) 
+{
+    mColorBuffer[y * mWidth + x] = color;
+    return true;
+};

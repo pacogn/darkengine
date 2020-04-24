@@ -41,6 +41,7 @@ public:
 // Getters
 public:
     uint32_t    GetFPS() const              { return mFPS;          }
+    double      GetDeltaTime() const        { return mTimeDelta;    }
     double      GetTimeDelta() const        { return mTimeDelta;    }
     double      GetTimeClear() const        { return mTimeClear;    }
     double      GetTimeUser() const         { return mTimeUser;     }

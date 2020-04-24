@@ -51,7 +51,7 @@ CWindow::Run() {
         for (;;) {
             mTimeFrameIni = mTimer.GetTime();
             if (mIsActive) {
-                mRenderer.Clear(0x00);
+                // mRenderer.Clear(0x00);
                 mTimeClear = mTimer.GetTime() - mTimeFrameIni;
 
                 double timeUserIni = mTimer.GetTime();
@@ -115,4 +115,3 @@ CWindow::VerticalSync() {
         }
     }
 }
-

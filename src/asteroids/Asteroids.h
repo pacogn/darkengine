@@ -1,13 +1,21 @@
 #pragma once
 
+#include <engine/CRenderer.h>
 #include <vector>
 #include <cstdint>
-
-#include <engine/CDrawer.h>
 
 class CWindow;
 
 using std::vector;
+
+struct sSpaceObject
+{
+    float x;
+    float y;
+    float dx;
+    float dy;
+    int nSize;
+};
 
 class Asteroids
 {
@@ -15,13 +23,15 @@ public:
     Asteroids(CWindow *window);
     ~Asteroids();
 
+    vector<sSpaceObject> vecAsteroids;
+
     void OnEnterFrame(CWindow *window);
 
-    void Animate(uint32_t *colorBuffer);
-    void Render(uint32_t *colorBuffer);
+    void Animate(sSpaceObject &a);
+    void Render(sSpaceObject &a);
 
+    CRenderer &rRenderer;
 protected:
-    CWindow *mWindow{nullptr};
+    CWindow *mWindow {nullptr};
 
-    // CDrawer drawer;
 };
