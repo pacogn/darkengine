@@ -44,6 +44,7 @@ bool CRenderer::Draw(int32_t x, int32_t y, uint32_t color)
     return SetPixel(x, y, color);
 };
 
+// MAGIC PPL VOODOO PPL!!
 //-------------------------------------
 void CRenderer::DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color, uint32_t pattern)
 {
@@ -150,4 +151,38 @@ void CRenderer::DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_
                 Draw(x, y, color);
         }
     }
+}
+
+void
+CRenderer::DrawRectangle(int32_t x, int32_t y, int32_t width, int32_t height, uint32_t color, uint32_t pattern)
+{
+    for (int32_t y1 = y; y1 < y + height; y1++) {
+        if (y1 < mHeight)
+            DrawLine(x, y1, x + width, y1, color, pattern);
+    }
+}
+
+/**
+ * Wraps Coordinates into a toroidal map
+ *
+ * Makes it so when the input coordenate of is not inside the
+ * ColorBuffer it will wrap the coordinates to the other side
+ * of the buffer.
+ *
+ * @param ix X input coordinate
+ * @param iy Y input coordinate
+ * @param ox X output coordinate
+ * @param oy Y output coordinate
+ */
+void
+CRenderer::WrapCoordinates(float ix, float iy, float &ox, float &oy)
+{
+    ox = ix;
+    oy = iy;
+
+    if (ix < 0.0f) ox = ix + (float)mWidth;
+    if (ix >= mWidth) ox = ix - (float)mWidth;
+
+    if (iy < 0.0f) oy = iy + (float)mHeight;
+    if (iy >= mHeight) oy = iy - (float)mHeight;
 }

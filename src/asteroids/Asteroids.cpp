@@ -6,7 +6,7 @@ using namespace MindShake;
 Asteroids::Asteroids(CWindow *window) : rRenderer(window->GetRenderer()) {
     mWindow = window;
 
-    vecAsteroids.push_back({20.0f, 20.0f, 10.0f, -10.0f, (int)1});
+    vecAsteroids.push_back({70.0f, 40.0f, 20.0f, -50.0f, (int)1});
     mWindow->AddOnEnterFrame(this, &Asteroids::OnEnterFrame);
 };
 
@@ -15,6 +15,8 @@ Asteroids::~Asteroids() {
 
 void
 Asteroids::OnEnterFrame(CWindow *window) {
+
+    rRenderer.Clear(0x00);
     for (auto &a : vecAsteroids)
     {
         Animate(a);
@@ -32,20 +34,15 @@ Asteroids::Animate(sSpaceObject &a) {
     a.x += a.dx * mWindow->GetDeltaTime();
     a.y += a.dy * mWindow->GetDeltaTime();
 
-    if (a.x > mWindow->GetRenderer().GetWidth())
-    {
-        a.dx *= -1.0;
-    }
-
-    if (a.y > mWindow->GetRenderer().GetHeight())
-    {
-        a.dy *= -1.0;
-    }
+    rRenderer.WrapCoordinates(a.x, a.y, a.x, a.y);
 };
 
 void
-Asteroids::Render(sSpaceObject &a) {
-    // rRenderer.SetPixel(a.x, a.y, 0x22);
-
-    rRenderer.DrawLine(10,10, 20,20, 0xffffff, 0);
+Asteroids::Render(sSpaceObject &a)
+{
+    //TODO: redefine pixel size in drawing functions.
+    rRenderer.DrawRectangle(a.x, a.y, 100, 100, MFB_RGB(0,255,0));
 };
+
+
+//TODO: where should i put this? utils file?? transformation class?
