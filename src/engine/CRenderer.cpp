@@ -3,41 +3,151 @@
 #include <Core/memory/memory.h>
 //-------------------------------------
 #include <memory.h>
+#include <stdlib.h>
 
 using namespace MindShake;
 
 //-------------------------------------
-CRenderer::CRenderer(uint32_t width, uint32_t height) {
-    mWidth       = width;
-    mHeight      = height;
+CRenderer::CRenderer(uint32_t width, uint32_t height)
+{
+    mWidth = width;
+    mHeight = height;
 
-    mColorBuffer = (uint32_t *) AlignedMalloc(width * height * sizeof(uint32_t), 64);
+    mColorBuffer = (uint32_t *)AlignedMalloc(width * height * sizeof(uint32_t), 64);
 }
 
 //-------------------------------------
-CRenderer::~CRenderer() {
-    if(mColorBuffer != nullptr) {
+CRenderer::~CRenderer()
+{
+    if (mColorBuffer != nullptr)
+    {
         AlignedFree(mColorBuffer);
     }
 }
 
 //-------------------------------------
-void
-CRenderer::Clear(uint8_t i) {
+void CRenderer::Clear(uint8_t i)
+{
     memset(mColorBuffer, i, mWidth * mHeight * 4);
 }
 
 //-------------------------------------
-bool
-CRenderer::Draw(int32_t x, int32_t y, uint32_t color)
+bool CRenderer::SetPixel(int32_t x, int32_t y, uint32_t color)
+{
+    mColorBuffer[y * mWidth + x] = color;
+    return true;
+};
+
+//-------------------------------------
+bool CRenderer::Draw(int32_t x, int32_t y, uint32_t color)
 {
     return SetPixel(x, y, color);
 };
 
 //-------------------------------------
-bool
-CRenderer::SetPixel(int32_t x, int32_t y, uint32_t color) 
+void CRenderer::DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color, uint32_t pattern)
 {
-    mColorBuffer[y * mWidth + x] = color;
-    return true;
-};
+    int x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
+    dx = x2 - x1;
+    dy = y2 - y1;
+
+    auto rol = [&](void) { pattern = (pattern << 1) | (pattern >> 31); return pattern & 1; };
+
+    // straight lines idea by gurkanctn
+    if (dx == 0) // Line is vertical
+    {
+        if (y2 < y1)
+            std::swap(y1, y2);
+        for (y = y1; y <= y2; y++)
+            if (rol())
+                Draw(x1, y, color);
+        return;
+    }
+
+    // maybe in horizontal lines there is a chance to do a memcpy?
+    if (dy == 0) // Line is horizontal
+    {
+        if (x2 < x1)
+            std::swap(x1, x2);
+        for (x = x1; x <= x2; x++)
+            if (rol())
+                Draw(x, y1, color);
+        return;
+    }
+
+    // Line is Funk-aye
+    dx1 = abs(dx);
+    dy1 = abs(dy);
+    px = 2 * dy1 - dx1;
+    py = 2 * dx1 - dy1;
+    if (dy1 <= dx1)
+    {
+        if (dx >= 0)
+        {
+            x = x1;
+            y = y1;
+            xe = x2;
+        }
+        else
+        {
+            x = x2;
+            y = y2;
+            xe = x1;
+        }
+
+        if (rol())
+            Draw(x, y, color);
+
+        for (i = 0; x < xe; i++)
+        {
+            x = x + 1;
+            if (px < 0)
+                px = px + 2 * dy1;
+            else
+            {
+                if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0))
+                    y = y + 1;
+                else
+                    y = y - 1;
+                px = px + 2 * (dy1 - dx1);
+            }
+            if (rol())
+                Draw(x, y, color);
+        }
+    }
+    else
+    {
+        if (dy >= 0)
+        {
+            x = x1;
+            y = y1;
+            ye = y2;
+        }
+        else
+        {
+            x = x2;
+            y = y2;
+            ye = y1;
+        }
+
+        if (rol())
+            Draw(x, y, color);
+
+        for (i = 0; y < ye; i++)
+        {
+            y = y + 1;
+            if (py <= 0)
+                py = py + 2 * dx1;
+            else
+            {
+                if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0))
+                    x = x + 1;
+                else
+                    x = x - 1;
+                py = py + 2 * (dx1 - dy1);
+            }
+            if (rol())
+                Draw(x, y, color);
+        }
+    }
+}

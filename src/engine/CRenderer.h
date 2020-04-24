@@ -21,12 +21,13 @@ public:
 
     bool        Draw(int32_t x, int32_t y, uint32_t color);
     bool        SetPixel(int32_t x, int32_t y, uint32_t color);
+    void        DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color = 0xFFFFFFFF, uint32_t pattern = 0xFFFFFFFF);
 
 private:
-                CRenderer(uint32_t width, uint32_t height);
-                CRenderer(const CRenderer &)    = delete;
-                CRenderer(CRenderer &&)         = delete;
-                ~CRenderer();
+    CRenderer(uint32_t width, uint32_t height);
+    CRenderer(const CRenderer &) = delete;
+    CRenderer(CRenderer &&) = delete;
+    ~CRenderer();
 
     CRenderer & operator = (const CRenderer &)  = delete;
     CRenderer & operator = (CRenderer &&)       = delete;

@@ -45,5 +45,7 @@ Asteroids::Animate(sSpaceObject &a) {
 
 void
 Asteroids::Render(sSpaceObject &a) {
-    rRenderer.SetPixel(a.x, a.y, 0x22);
+    // rRenderer.SetPixel(a.x, a.y, 0x22);
+
+    rRenderer.DrawLine(10,10, 20,20, 0xffffff, 0);
 };
