@@ -33,5 +33,4 @@ public:
     CRenderer &rRenderer;
 protected:
     CWindow *mWindow {nullptr};
-
 };

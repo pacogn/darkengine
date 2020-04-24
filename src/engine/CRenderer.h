@@ -19,7 +19,7 @@ public:
     float       GetAspectRatio() const      { return (mHeight > 0) ? float(mWidth)  / float(mHeight) : 1.0f; }
     float       GetAspectRatioInv() const   { return (mWidth  > 0) ? float(mHeight) / float(mWidth)  : 1.0f; }
 
-    bool        Draw(int32_t x, int32_t y, uint32_t color);
+    virtual void Draw(int32_t x, int32_t y, uint32_t color);
     bool        SetPixel(int32_t x, int32_t y, uint32_t color);
     void        DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color = 0xFFFFFFFF, uint32_t pattern = 0xFFFFFFFF);
     void        DrawRectangle(int32_t x, int32_t y, int32_t width, int32_t height, uint32_t color = 0xFFFFFFFF, uint32_t pattern = 0xFFFFFFFF);

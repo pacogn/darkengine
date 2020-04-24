@@ -39,9 +39,12 @@ bool CRenderer::SetPixel(int32_t x, int32_t y, uint32_t color)
 };
 
 //-------------------------------------
-bool CRenderer::Draw(int32_t x, int32_t y, uint32_t color)
+void CRenderer::Draw(int32_t x, int32_t y, uint32_t color)
 {
-    return SetPixel(x, y, color);
+    float fx, fy;
+    WrapCoordinates(x, y, fx, fy);
+
+    SetPixel((int32_t)fx, (int32_t)fy, color);
 };
 
 // MAGIC PPL VOODOO PPL!!
@@ -157,7 +160,6 @@ void
 CRenderer::DrawRectangle(int32_t x, int32_t y, int32_t width, int32_t height, uint32_t color, uint32_t pattern)
 {
     for (int32_t y1 = y; y1 < y + height; y1++) {
-        if (y1 < mHeight)
             DrawLine(x, y1, x + width, y1, color, pattern);
     }
 }
