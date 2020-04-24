@@ -15,6 +15,7 @@ struct sSpaceObject
     float dx;
     float dy;
     int nSize;
+    float angle;
 };
 
 class Asteroids
@@ -23,14 +24,19 @@ public:
     Asteroids(CWindow *window);
     ~Asteroids();
 
-    vector<sSpaceObject> vecAsteroids;
+    vector<sSpaceObject *> vecAsteroids;
+    sSpaceObject player;
 
     void OnEnterFrame(CWindow *window);
 
+    void HandleUserInput();
     void Animate(sSpaceObject &a);
     void Render(sSpaceObject &a);
+    void RenderPlayer();
 
-    CRenderer &rRenderer;
+    CRenderer &mRenderer;
+
+    const float F=200.0f;
 protected:
     CWindow *mWindow {nullptr};
 };

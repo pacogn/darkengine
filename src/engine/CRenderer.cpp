@@ -32,19 +32,23 @@ void CRenderer::Clear(uint8_t i)
 }
 
 //-------------------------------------
-bool CRenderer::SetPixel(int32_t x, int32_t y, uint32_t color)
+void CRenderer::SetPixel(int32_t x, int32_t y, uint32_t color)
 {
-    mColorBuffer[y * mWidth + x] = color;
-    return true;
+    if(uint32_t(x) < mWidth && uint32_t(y) < mHeight) 
+        mColorBuffer[y * mWidth + x] = color;
 };
 
 //-------------------------------------
 void CRenderer::Draw(int32_t x, int32_t y, uint32_t color)
 {
-    float fx, fy;
-    WrapCoordinates(x, y, fx, fy);
-
-    SetPixel((int32_t)fx, (int32_t)fy, color);
+    if (true) {
+        float fx, fy;
+        WrapCoordinates(x, y, fx, fy);
+        SetPixel(fx, fy, color);
+    }
+    else {
+        SetPixel(x, y, color);
+    }
 };
 
 // MAGIC PPL VOODOO PPL!!

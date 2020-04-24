@@ -75,6 +75,8 @@ target_include_directories(Exercise1 PRIVATE src/exercise1)
 # Asteroids
 #--------------------------------------
 set(SRC_ASTEROIDS_FILES
+    src/asteroids/CRendererAsteroids.cpp
+    src/asteroids/CRendererAsteroids.h
     src/asteroids/main.cpp
     src/asteroids/Asteroids.h
     src/asteroids/Asteroids.cpp
