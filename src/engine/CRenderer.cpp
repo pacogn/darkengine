@@ -50,7 +50,7 @@ void CRenderer::Draw(int32_t x, int32_t y, uint32_t color)
 
 // MAGIC PPL VOODOO PPL!!
 //-------------------------------------
-void CRenderer::DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color, uint32_t pattern)
+void CRenderer::DrawLine2(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color, uint32_t pattern)
 {
     int x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
     dx = x2 - x1;
@@ -154,6 +154,34 @@ void CRenderer::DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_
             if (rol())
                 Draw(x, y, color);
         }
+    }
+}
+
+//-------------------------------------
+void
+CRenderer::DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color, uint32_t pattern) {
+    int32_t i, length;
+    int32_t dx, dy;
+
+    length = Abs(x2 - x1);
+    if (Abs(y2 - y1) > length) {
+        length = Abs(y2 - y1);
+    }
+    if (length == 0) {
+        return;
+    }
+
+    dx = ((x2 - x1) << 16) / length;
+    dy = ((y2 - y1) << 16) / length;
+    x1 <<= 16;
+    y1 <<= 16;
+    for (i = 0; i < length; ++i) {
+        pattern = (pattern << 1) | (pattern >> 31);
+        if(pattern & 1) {
+            Draw(x1 >> 16, y1 >> 16, color);
+        }
+        x1 += dx;
+        y1 += dy;
     }
 }
 

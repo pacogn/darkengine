@@ -26,6 +26,7 @@ public:
     virtual void Draw(int32_t x, int32_t y, uint32_t color);
     void        SetPixel(int32_t x, int32_t y, uint32_t color);
     void        DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color = 0xFFFFFFFF, uint32_t pattern = 0xFFFFFFFF);
+    void        DrawLine2(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color = 0xFFFFFFFF, uint32_t pattern = 0xFFFFFFFF);
     void        DrawRectangle(int32_t x, int32_t y, int32_t width, int32_t height, uint32_t color = 0xFFFFFFFF, uint32_t pattern = 0xFFFFFFFF);
 
     //TODO: move somewhere else... but where?! CRenderer is going to bee way too crowded
