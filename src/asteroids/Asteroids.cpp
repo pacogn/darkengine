@@ -60,7 +60,7 @@ Asteroids::OnEnterFrame(CWindow *window) {
         mRenderer.WrapCoordinates(a->x, a->y, a->x, a->y);
 
         // HERE! POR QUE PETA!!
-        mRenderer.DrawWireframeModel(vecModelAsteroid, a->x, a->y, 1, 0xffffff);
+        mRenderer.DrawWireframeModel(vecModelAsteroid, a->x, a->y, 1, 1, 0xffffff);
     }
 
     player->Render(&mRenderer);
