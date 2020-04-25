@@ -27,6 +27,7 @@ public:
     ~Asteroids();
 
     vector<sSpaceObject *> vecAsteroids;
+    vector<sSpaceObject *> vecBullets;
     Player *player;
 
     void OnEnterFrame(CWindow *window);
@@ -40,7 +41,6 @@ public:
 
     vector<pair<float,float>> vecModelAsteroid;
 
-    const float F=200.0f;
 protected:
     CWindow *mWindow {nullptr};
 };

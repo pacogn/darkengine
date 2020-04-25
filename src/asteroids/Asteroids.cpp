@@ -12,7 +12,7 @@ Asteroids::Asteroids(CWindow *window) : mRenderer(window->GetRenderer()) {
     mWindow = window;
 
     vecAsteroids.emplace_back(
-        new sSpaceObject({70.0f, 40.0f, 20.0f, -50.0f, (int)1, 0.0f})
+        new sSpaceObject({70.0f, 40.0f, 20.0f, -50.0f, (int)8, 0.0f})
     );
 
     player = new Player(
@@ -36,17 +36,13 @@ Asteroids::Asteroids(CWindow *window) : mRenderer(window->GetRenderer()) {
 };
 
 Asteroids::~Asteroids() {
-    for (auto *a : vecAsteroids)
-    {
-        delete a;
-    }
-
+    for (auto *a : vecAsteroids) delete a;
+    for (auto *b : vecBullets) delete b;
     delete player;
 };
 
 void
 Asteroids::OnEnterFrame(CWindow *window) {
-
     mRenderer.Clear(0x00);
 
     HandleUserInput();
@@ -60,8 +56,9 @@ Asteroids::OnEnterFrame(CWindow *window) {
         mRenderer.WrapCoordinates(a->x, a->y, a->x, a->y);
 
         // HERE! POR QUE PETA!!
-        mRenderer.DrawWireframeModel(vecModelAsteroid, a->x, a->y, 1, 1, 0xffffff);
+        mRenderer.DrawWireframeModel(vecModelAsteroid, a->x, a->y, 1, a->nSize, 0xffffff);
     }
+
 
     player->Render(&mRenderer);
 };
@@ -72,37 +69,23 @@ Asteroids::HandleUserInput() {
 
     // Quit
     if (keys[KB_KEY_Q])
-    {
+    
         exit(0);
-    }
 
     // Reset
     if (keys[KB_KEY_R])
-    {
-    }
+        player->Reset(mRenderer.GetWidth() / 2.0f, mRenderer.GetHeight() / 2.0f);
 
     // Steer
     if (keys[KB_KEY_J])
-    {
-        player->angle -= 5.0f * mWindow->GetDeltaTime();
-    }
+        player->SteerLeft(mWindow->GetDeltaTime());
 
     if (keys[KB_KEY_K])
-    {
-        player->angle += 5.0f * mWindow->GetDeltaTime();
-    }
+        player->SteerRight(mWindow->GetDeltaTime());
 
     // Thrust
-    if (keys[KB_KEY_F])
-    {
-        // ACCELERATION changes VELOCITY (with respecto of time)
-        player->acc->x += Sin(player->angle) * F * mWindow->GetDeltaTime();
-        player->acc->y += -Cos(player->angle) * F * mWindow->GetDeltaTime();
-    }
+    if (keys[KB_KEY_SPACE])
+        player->Thrust(mWindow->GetDeltaTime());
 
-    // VELOCITY changes POSITION (with respect of time)
-    player->pos->x += player->acc->x * mWindow->GetDeltaTime();
-    player->pos->y += player->acc->y * mWindow->GetDeltaTime();
-
-    mRenderer.WrapCoordinates(player->pos->x, player->pos->y, player->pos->x, player->pos->y);
+    player->Update(mWindow->GetDeltaTime());
 };
