@@ -21,7 +21,6 @@ Asteroids::Asteroids(CWindow *window) : mRenderer(window->GetRenderer()) {
         0
     );
 
-
     // init asteroids;
     int verts = 20;
     for (int i=0; i < verts; i++) {
@@ -52,13 +51,27 @@ Asteroids::OnEnterFrame(CWindow *window) {
     {
         a->x += a->dx * mWindow->GetDeltaTime();
         a->y += a->dy * mWindow->GetDeltaTime();
-
         mRenderer.WrapCoordinates(a->x, a->y, a->x, a->y);
 
-        // HERE! POR QUE PETA!!
         mRenderer.DrawWireframeModel(vecModelAsteroid, a->x, a->y, 1, a->nSize, 0xffffff);
     }
 
+    // render bullets
+    for (auto *b : vecBullets)
+    {
+        b->x += b->dx * mWindow->GetDeltaTime();
+        b->y += b->dy * mWindow->GetDeltaTime();
+
+        if (b->x < 0 || b->x >= mRenderer.GetWidth() || b->y < 0 || b->y >= mRenderer.GetHeight()) {
+            delete b;
+            vecBullets.
+        }
+        else {
+            mRenderer.WrapCoordinates(b->x, b->y, b->x, b->y);
+            mRenderer.DrawRectangle(b->x, b->y, 5, 5, 0xCCCCCC);
+        }
+
+    }
 
     player->Render(&mRenderer);
 };
@@ -68,24 +81,29 @@ Asteroids::HandleUserInput() {
    uint8_t *keys = const_cast<uint8_t *>(mWindow->GetKeyBuffer());
 
     // Quit
-    if (keys[KB_KEY_Q])
-    
-        exit(0);
+    if (keys[KB_KEY_Q]) exit(0);
 
     // Reset
-    if (keys[KB_KEY_R])
-        player->Reset(mRenderer.GetWidth() / 2.0f, mRenderer.GetHeight() / 2.0f);
+    if (keys[KB_KEY_R]) player->Reset(mRenderer.GetWidth() / 2.0f, mRenderer.GetHeight() / 2.0f);
 
     // Steer
-    if (keys[KB_KEY_J])
-        player->SteerLeft(mWindow->GetDeltaTime());
-
-    if (keys[KB_KEY_K])
-        player->SteerRight(mWindow->GetDeltaTime());
+    if (keys[KB_KEY_J]) player->SteerLeft(mWindow->GetDeltaTime());
+    if (keys[KB_KEY_K]) player->SteerRight(mWindow->GetDeltaTime());
 
     // Thrust
-    if (keys[KB_KEY_SPACE])
-        player->Thrust(mWindow->GetDeltaTime());
+    if (keys[KB_KEY_SPACE]) player->Thrust(mWindow->GetDeltaTime());
+
+    // Fire!
+    if (keys[KB_KEY_F]) {
+        keys[KB_KEY_F] = false;
+        vecBullets.emplace_back(new sSpaceObject({
+            player->pos->x, player->pos->y,
+            50.0f * Sin(player->angle), -50.0f * Cos(player->angle),
+            0,
+            0
+        }));
+    }
+
 
     player->Update(mWindow->GetDeltaTime());
 };
