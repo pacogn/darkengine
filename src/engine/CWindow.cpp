@@ -11,7 +11,12 @@ using namespace MindShake;
 #endif
 
 //-------------------------------------
-CWindow::CWindow(const char *title, uint32_t width, uint32_t height, uint32_t flags) : mRenderer(width, height) {
+CWindow::CWindow(const char *title, uint32_t width, uint32_t height, uint32_t flags)
+    :CWindow(title, width, height, flags, new CRenderer(width, height))
+{
+}
+
+CWindow::CWindow(const char *title, unsigned width, unsigned height, unsigned flags, CRenderer *Renderer) {
     mWindow = mfb_open_ex(title, width, height, flags);
     if (mWindow) {
         mfb_set_active_callback(mWindow, this, &CWindow::OnActive);
@@ -22,6 +27,8 @@ CWindow::CWindow(const char *title, uint32_t width, uint32_t height, uint32_t fl
         //mfb_set_mouse_move_callback(mWindow, this, &CWindow::OnMouseMove);
         //mfb_set_mouse_scroll_callback(mWindow, this, &CWindow::OnMouseScroll);
     }
+
+    mRenderer = Renderer;
 }
 
 //-------------------------------------
@@ -51,7 +58,7 @@ CWindow::Run() {
         for (;;) {
             mTimeFrameIni = mTimer.GetTime();
             if (mIsActive) {
-                mRenderer.Clear(0x00);
+                // mRenderer.Clear(0x00);
                 mTimeClear = mTimer.GetTime() - mTimeFrameIni;
 
                 double timeUserIni = mTimer.GetTime();
@@ -61,7 +68,7 @@ CWindow::Run() {
             }
 
             double timeUpdateIni = mTimer.GetTime();
-            mfb_update_state state = mfb_update(mWindow, mRenderer.GetColorBuffer());
+            mfb_update_state state = mfb_update(mWindow, mRenderer->GetColorBuffer());
             if (state != STATE_OK) {
                 break;
             }
@@ -115,4 +122,3 @@ CWindow::VerticalSync() {
         }
     }
 }
-

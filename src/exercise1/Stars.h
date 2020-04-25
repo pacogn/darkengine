@@ -1,7 +1,8 @@
 #pragma once
 
-#include <engine/CCamera.h>
 #include <engine/CMesh.h>
+#include <engine/CCamera.h>
+
 //-------------------------------------
 #include <vector>
 #include <cstdint>
