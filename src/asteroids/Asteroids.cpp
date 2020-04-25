@@ -57,20 +57,22 @@ Asteroids::OnEnterFrame(CWindow *window) {
     }
 
     // render bullets
-    for (auto *b : vecBullets)
+    for (int i=0; i<vecBullets.size(); ++i)
     {
+        auto* b = vecBullets[i];
+ 
         b->x += b->dx * mWindow->GetDeltaTime();
         b->y += b->dy * mWindow->GetDeltaTime();
 
         if (b->x < 0 || b->x >= mRenderer.GetWidth() || b->y < 0 || b->y >= mRenderer.GetHeight()) {
-            delete b;
-            vecBullets.
+            delete vecBullets[i];
+            vecBullets.erase(vecBullets.begin() + i);
+            --i;
         }
         else {
             mRenderer.WrapCoordinates(b->x, b->y, b->x, b->y);
             mRenderer.DrawRectangle(b->x, b->y, 5, 5, 0xCCCCCC);
         }
-
     }
 
     player->Render(&mRenderer);
@@ -97,9 +99,9 @@ Asteroids::HandleUserInput() {
     if (keys[KB_KEY_F]) {
         keys[KB_KEY_F] = false;
         vecBullets.emplace_back(new sSpaceObject({
-            player->pos->x, player->pos->y,
-            50.0f * Sin(player->angle), -50.0f * Cos(player->angle),
-            0,
+			player->pos->x, player->pos->y,
+			player->vel->x + (500.0f * Sin(player->angle)),  player->vel->y - (500.0f * Cos(player->angle)),
+			0,
             0
         }));
     }

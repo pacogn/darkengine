@@ -3,28 +3,29 @@
 Player::Player(float x, float y, float dx = 0.0f, float dy = 0.0f, float _angle = 0.0f)
 {
     pos = new CVector2(x, y);
-    acc = new CVector2(dx, dy);
+    vel = new CVector2(dx, dy);
     angle = _angle;
 }
 
 Player::~Player()
 {
     delete pos;
-    delete acc;
+    delete vel;
 }
 
+// Integrador Euleriano
 void Player::Update(double deltaTime)
 {
     // VELOCITY changes POSITION (with respect of time)
-    pos->x += acc->x * deltaTime;
-    pos->y += acc->y * deltaTime;
+    pos->x += vel->x * deltaTime;
+    pos->y += vel->y * deltaTime;
 }
 
 void Player::Thrust(double deltaTime)
 {
     // ACCELERATION changes VELOCITY (with respecto of time)
-    acc->x += Sin(angle) * mass * deltaTime;
-    acc->y += -Cos(angle) * mass * deltaTime;
+    vel->x += Sin(angle) * acc * deltaTime;
+    vel->y += -Cos(angle) * acc * deltaTime;
 }
 
 void Player::SteerLeft(double deltaTime)
@@ -47,7 +48,7 @@ void Player::Reset(float x, float y)
 {
     pos->x = x;
     pos->y = y;
-    acc->x = 0.0f;
-    acc->y = 0.0f;
+    vel->x = 0.0f;
+    vel->y = 0.0f;
     angle = 0.0f;
 }

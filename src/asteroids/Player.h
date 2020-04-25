@@ -18,10 +18,10 @@ public:
     void Reset(float x = 0.0f, float y = 0.0f);
 
     CVector2 *pos;
-    CVector2 *acc;
+    CVector2 *vel;
     float angle = 0;
     uint32_t color = 0x00FF00;
-    float mass=200.0f;
+    float acc=200.0f;
     float steerDegrees=5.0f;
 
 private:
