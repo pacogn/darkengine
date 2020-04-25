@@ -1,11 +1,15 @@
 #include "CRenderer.h"
 //-------------------------------------
 #include <Core/memory/memory.h>
+#include <engine/CRenderer.h>
+#include <Common/Math/math_funcs.h>
 //-------------------------------------
 #include <memory.h>
 #include <stdlib.h>
+#include <vector>
 
 using namespace MindShake;
+using namespace std;
 
 //-------------------------------------
 CRenderer::CRenderer(uint32_t width, uint32_t height)
@@ -41,14 +45,7 @@ void CRenderer::SetPixel(int32_t x, int32_t y, uint32_t color)
 //-------------------------------------
 void CRenderer::Draw(int32_t x, int32_t y, uint32_t color)
 {
-    if (true) {
-        float fx, fy;
-        WrapCoordinates(x, y, fx, fy);
-        SetPixel(fx, fy, color);
-    }
-    else {
-        SetPixel(x, y, color);
-    }
+    SetPixel(x, y, color);
 };
 
 // MAGIC PPL VOODOO PPL!!
@@ -191,4 +188,51 @@ CRenderer::WrapCoordinates(float ix, float iy, float &ox, float &oy)
 
     if (iy < 0.0f) oy = iy + (float)mHeight;
     if (iy >= mHeight) oy = iy - (float)mHeight;
+}
+
+void
+CRenderer::DrawWireframeModel(
+    const vector<pair<float, float>> &vecModelCoordinates,
+    float x, float y,
+    float r,
+    float s,
+    uint32_t color 
+)
+{
+    vector<pair<float, float>> vecTransformedCoordinates;
+    int verts = vecModelCoordinates.size();
+    vecTransformedCoordinates.resize(verts);
+
+    // Order matters
+    // 1. Rotate
+    for (int i = 0; i < verts; i++)
+    {
+        vecTransformedCoordinates[i].first  = vecModelCoordinates[i].first * Cos(r) - vecModelCoordinates[i].second * Sin(r);
+        vecTransformedCoordinates[i].second = vecModelCoordinates[i].first * Sin(r) + vecModelCoordinates[i].second * Cos(r);
+    }
+
+    // 2. Scaling
+    for (int i = 0; i < verts; i++)
+    {
+        vecTransformedCoordinates[i].first = vecTransformedCoordinates[i].first * s;
+        vecTransformedCoordinates[i].second = vecTransformedCoordinates[i].second * s;
+    }
+
+    // 3. Translate
+    for (int i = 0; i < verts; i++)
+    {
+        vecTransformedCoordinates[i].first = vecTransformedCoordinates[i].first + x;
+        vecTransformedCoordinates[i].second = vecTransformedCoordinates[i].second + y;
+    }
+
+
+    for (int i = 0; i < verts+1; i++)
+    {
+        int j = (i + 1);
+        CRenderer::DrawLine(
+            vecTransformedCoordinates[i % verts].first, vecTransformedCoordinates[i % verts].second,
+            vecTransformedCoordinates[j % verts].first, vecTransformedCoordinates[j % verts].second,
+            color
+        );
+    }
 }

@@ -80,6 +80,8 @@ set(SRC_ASTEROIDS_FILES
     src/asteroids/main.cpp
     src/asteroids/Asteroids.h
     src/asteroids/Asteroids.cpp
+    src/asteroids/Player.h
+    src/asteroids/Player.cpp
 )
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src/asteroids" FILES ${SRC_ASTEROIDS_FILES})
 

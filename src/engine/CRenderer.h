@@ -1,6 +1,10 @@
 #pragma once
 
+#include <vector>
+#include <stdlib.h>
 #include <cstdint>
+#include <Common/Math/math_funcs.h>
+using namespace std;
 
 class CMesh;
 
@@ -27,12 +31,15 @@ public:
     //TODO: move somewhere else... but where?! CRenderer is going to bee way too crowded
     void WrapCoordinates(float ix, float iy, float &ox, float &oy);
 
-private:
+    void DrawWireframeModel(const vector<pair<float, float>> &vecModelCoordinates, float x, float y, float r = 0.0f, float s = 1, uint32_t color=0xffffff);
+
+protected:
     CRenderer(uint32_t width, uint32_t height);
     CRenderer(const CRenderer &) = delete;
     CRenderer(CRenderer &&) = delete;
-    ~CRenderer();
+    virtual ~CRenderer();
 
+private:
     CRenderer & operator = (const CRenderer &)  = delete;
     CRenderer & operator = (CRenderer &&)       = delete;
 

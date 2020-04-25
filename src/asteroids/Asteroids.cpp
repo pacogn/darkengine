@@ -1,5 +1,7 @@
 #include "Asteroids.h"
 #include <engine/CWindow.h>
+#include <engine/CRenderer.h>
+#include <CRendererAsteroids.h>
 
 #include <Common/Math/math_funcs.h>
 #include <Common/Math/constants.h>
@@ -13,11 +15,21 @@ Asteroids::Asteroids(CWindow *window) : mRenderer(window->GetRenderer()) {
         new sSpaceObject({70.0f, 40.0f, 20.0f, -50.0f, (int)1, 0.0f})
     );
 
-    player.x = mRenderer.GetWidth() / 2.0f;
-    player.y = mRenderer.GetHeight() / 2.0f;
-    player.dx = 0;
-    player.dy = 0;
-    player.angle = 0;
+    player = new Player(
+        mRenderer.GetWidth() / 2.0f, mRenderer.GetHeight() / 2.0f,
+        0, 0,
+        0
+    );
+
+
+    // init asteroids;
+    int verts = 20;
+    for (int i=0; i < verts; i++) {
+        float radius = 5.0f;
+        float a = ((float)i / (float)verts) * 6.28318f;
+
+        vecModelAsteroid.push_back(make_pair(radius * Sin(a), radius * Cos(a)));
+    }
 
     // mWindow->AddOnEnterFrame(this, &Asteroids::OnEnterFrame);
     mWindow->AddOnEnterFrame(this, &Asteroids::OnEnterFrame);
@@ -27,7 +39,9 @@ Asteroids::~Asteroids() {
     for (auto *a : vecAsteroids)
     {
         delete a;
-    } 
+    }
+
+    delete player;
 };
 
 void
@@ -40,84 +54,55 @@ Asteroids::OnEnterFrame(CWindow *window) {
     // render asteroids
     for (auto *a : vecAsteroids)
     {
-        Animate(*a);
-        Render(*a);
+        a->x += a->dx * mWindow->GetDeltaTime();
+        a->y += a->dy * mWindow->GetDeltaTime();
+
+        mRenderer.WrapCoordinates(a->x, a->y, a->x, a->y);
+
+        // HERE! POR QUE PETA!!
+        mRenderer.DrawWireframeModel(vecModelAsteroid, a->x, a->y, 1, 0xffffff);
     }
 
-    RenderPlayer();
+    player->Render(&mRenderer);
 };
 
 void
 Asteroids::HandleUserInput() {
-    uint8_t *keys = const_cast<uint8_t *>(mWindow->GetKeyBuffer());
+   uint8_t *keys = const_cast<uint8_t *>(mWindow->GetKeyBuffer());
+
+    // Quit
+    if (keys[KB_KEY_Q])
+    {
+        exit(0);
+    }
 
     // Reset
     if (keys[KB_KEY_R])
     {
-
-        player.x = mRenderer.GetWidth() / 2.0f;
-        player.y = mRenderer.GetHeight() / 2.0f;
-        player.dx = 0;
-        player.dy = 0;
-        player.angle = 0;
     }
 
     // Steer
     if (keys[KB_KEY_J])
     {
-        printf("Chaning angle Left\n");
-        player.angle -= 5.0f * mWindow->GetDeltaTime();
+        player->angle -= 5.0f * mWindow->GetDeltaTime();
     }
 
-    if (keys[KB_KEY_L])
+    if (keys[KB_KEY_K])
     {
-        printf("Chaning angle Right\n");
-        player.angle += 5.0f * mWindow->GetDeltaTime();
+        player->angle += 5.0f * mWindow->GetDeltaTime();
     }
 
     // Thrust
     if (keys[KB_KEY_F])
     {
         // ACCELERATION changes VELOCITY (with respecto of time)
-        printf("Accelerate\n");
-        player.dx += Sin(player.angle) * F * mWindow->GetDeltaTime();
-        player.dy += -Cos(player.angle) * F * mWindow->GetDeltaTime();
+        player->acc->x += Sin(player->angle) * F * mWindow->GetDeltaTime();
+        player->acc->y += -Cos(player->angle) * F * mWindow->GetDeltaTime();
     }
 
     // VELOCITY changes POSITION (with respect of time)
-    player.x += player.dx * mWindow->GetDeltaTime();
-    player.y += player.dy * mWindow->GetDeltaTime();
+    player->pos->x += player->acc->x * mWindow->GetDeltaTime();
+    player->pos->y += player->acc->y * mWindow->GetDeltaTime();
 
-    printf("angle: %4.2f\n", player.angle);
-    printf("x1: %4.2f y1: %4.2f\n", player.x, player.y);
-    printf("dx: %4.2f dy: %4.2f\n", player.x, player.y);
-
-    mRenderer.WrapCoordinates(player.x, player.y, player.x, player.y);
-    printf("x2: %4.2f y:2%4.2f\n", player.x, player.y);
-    printf("------------------\n");
+    mRenderer.WrapCoordinates(player->pos->x, player->pos->y, player->pos->x, player->pos->y);
 };
-
-void Asteroids::RenderPlayer()
-{
-    mRenderer.DrawRectangle(player.x, player.y, 100, 100, MFB_RGB(255, 255, 0));
-};
-
-void Asteroids::Animate(sSpaceObject &a)
-{
-    // a = (v2 - v1) / t
-
-    // v2 = a*t + v1
-    // p2 = v*t + p1
-
-    a.x += a.dx * mWindow->GetDeltaTime();
-    a.y += a.dy * mWindow->GetDeltaTime();
-
-    mRenderer.WrapCoordinates(a.x, a.y, a.x, a.y);
-};
-
-void Asteroids::Render(sSpaceObject &a)
-{
-    mRenderer.DrawRectangle(a.x, a.y, 100, 100, MFB_RGB(0, 255, 0));
-};
-
-//TODO: where should i put this? utils file?? transformation class?

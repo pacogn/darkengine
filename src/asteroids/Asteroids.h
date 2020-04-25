@@ -4,6 +4,8 @@
 #include <vector>
 #include <cstdint>
 
+#include <Player.h>
+
 class CWindow;
 
 using std::vector;
@@ -25,7 +27,7 @@ public:
     ~Asteroids();
 
     vector<sSpaceObject *> vecAsteroids;
-    sSpaceObject player;
+    Player *player;
 
     void OnEnterFrame(CWindow *window);
 
@@ -35,6 +37,8 @@ public:
     void RenderPlayer();
 
     CRenderer &mRenderer;
+
+    vector<pair<float,float>> vecModelAsteroid;
 
     const float F=200.0f;
 protected:

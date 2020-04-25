@@ -22,9 +22,10 @@ class CWindow {
 
 public:
                 CWindow(const char *title, unsigned width, unsigned height, unsigned flags);
+                CWindow(const char *title, unsigned width, unsigned height, unsigned flags, CRenderer *Renderer);
                 ~CWindow();
 
-    CRenderer & GetRenderer()               { return mRenderer;     }
+    CRenderer & GetRenderer()               { return *mRenderer;     }
 
     template<typename T>
     void        AddOnEnterFrame(T *obj, void (T::*method)(CWindow *)) { AddOnEnterFrame(std::bind(method, obj, _1));  }
@@ -68,7 +69,7 @@ private:
 
 private:
     struct mfb_window   *mWindow      { nullptr };
-    CRenderer       mRenderer;
+    CRenderer       *mRenderer;
     bool            mIsActive     { true };
 
     uint32_t        mFPS { 60 };
