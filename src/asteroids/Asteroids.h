@@ -28,6 +28,7 @@ public:
 
     vector<sSpaceObject *> vecAsteroids;
     vector<sSpaceObject *> vecBullets;
+    vector<sSpaceObject *> vecNewAsteroids;
     Player *player;
 
     void OnEnterFrame(CWindow *window);
@@ -40,6 +41,11 @@ public:
     CRenderer &mRenderer;
 
     vector<pair<float,float>> vecModelAsteroid;
+
+    bool IsPointInsideCircle(float cx, float cy, float radius, float x, float y)
+    {
+        return sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) < radius;
+    }
 
 protected:
     CWindow *mWindow {nullptr};
