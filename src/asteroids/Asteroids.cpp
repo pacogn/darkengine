@@ -26,10 +26,11 @@ Asteroids::Asteroids(CWindow *window) : mRenderer(window->GetRenderer()) {
         0
     );
 
-    // init asteroids;
+    // anit asteroids;
     int verts = 20;
     for (int i=0; i < verts; i++) {
-        float radius = 5.0f;
+        // float radius = ((float)rand() / (float)RAND_MAX) * 6.283185f;
+        float radius = (float)(rand() % 5 + 5);
         float a = ((float)i / (float)verts) * 6.28318f;
 
         vecModelAsteroid.push_back(make_pair(radius * Sin(a), radius * Cos(a)));
@@ -72,23 +73,30 @@ Asteroids::OnEnterFrame(CWindow *window) {
 
         // check if bullet colides with asteroid
 
-
-        for (auto &a : vecAsteroids)
+        for (int j = 0; j < (int)vecAsteroids.size(); ++j)
         {
-            if (IsPointInsideCircle(b->x, b->y, a->nSize, a->x, a->y))
+            auto* a = vecAsteroids[j];
+            if (IsPointInsideCircle(a->x, a->y, a->nSize, b->x, b->y))
             {
                 // Asteroid hit
                 // throw bullet off-screen
-                b->x = -1000;
+                b->x = -100;
 
                 if (a->nSize > 4)
                 {
                     float angle1 = ((float)rand() / (float)RAND_MAX) * 6.283185f;
                     float angle2 = ((float)rand() / (float)RAND_MAX) * 6.283185f;
 
-                    vecNewAsteroids.emplace_back(new sSpaceObject({
+                    vecNewAsteroids.push_back(new sSpaceObject({
                         a->x, a->y,
                         10.0f * Sin(angle1), -10.0f * Cos(angle1),
+                        (int) a->nSize >> 1,
+                        0
+                    }));
+
+                    vecNewAsteroids.push_back(new sSpaceObject({
+                        a->x, a->y,
+                        10.0f * Sin(angle2), -10.0f * Cos(angle2),
                         (int) a->nSize >> 1,
                         0
                     }));
@@ -97,6 +105,14 @@ Asteroids::OnEnterFrame(CWindow *window) {
                     a->x = -100;
                 }
             }
+        }
+
+        // remove offscreen asteroids
+        if (vecAsteroids.size() > 0)
+        {
+            auto i = remove_if(vecAsteroids.begin(), vecAsteroids.end(), [&](sSpaceObject *o) { return (o->x < 0); });
+            if (i != vecAsteroids.end())
+                vecAsteroids.erase(i);
         }
 
         // Add recently created asteroids if there is a hit

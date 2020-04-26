@@ -44,7 +44,7 @@ public:
 
     bool IsPointInsideCircle(float cx, float cy, float radius, float x, float y)
     {
-        return sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) < radius;
+        return Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) < radius;
     }
 
 protected:
