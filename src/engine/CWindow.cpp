@@ -21,6 +21,19 @@ CWindow::CWindow(const char *title, unsigned width, unsigned height, unsigned fl
     if (mWindow) {
         mfb_set_active_callback(mWindow, this, &CWindow::OnActive);
         mfb_set_resize_callback(mWindow, this, &CWindow::OnResize);
+
+        // Fix aspect ratio
+        unsigned w = mfb_get_window_width(mWindow);
+        unsigned h = mfb_get_window_height(mWindow);
+        if(w != width || h != height) {
+            unsigned w2 = (width * float(h) / height) + 0.5f;
+            unsigned h2 = h;
+            if(w2 > w) {
+                w2 = w;
+                h2 = (height * float(w) / width + 0.5f);
+            }
+            mfb_set_viewport(mWindow, 0, h-h2, w2, h2);
+        }
         //mfb_set_keyboard_callback(mWindow, this, &CWindow::OnKeyboard);
         //mfb_set_char_input_callback(mWindow, this, &CWindow::OnCharInput);
         //mfb_set_mouse_button_callback(mWindow, this, &CWindow::OnMouseButton);
