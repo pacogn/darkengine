@@ -34,8 +34,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 set(SRC_ENGINE_FILES
     src/engine/CCamera.cpp
     src/engine/CCamera.h
-    src/engine/CDrawer.cpp
-    src/engine/CDrawer.h
+    src/engine/CColor.h
     src/engine/CMesh.cpp
     src/engine/CMesh.h
     src/engine/CRenderer.cpp
@@ -76,9 +75,13 @@ target_include_directories(Exercise1 PRIVATE src/exercise1)
 # Asteroids
 #--------------------------------------
 set(SRC_ASTEROIDS_FILES
+    src/asteroids/CRendererAsteroids.cpp
+    src/asteroids/CRendererAsteroids.h
     src/asteroids/main.cpp
     src/asteroids/Asteroids.h
     src/asteroids/Asteroids.cpp
+    src/asteroids/Player.h
+    src/asteroids/Player.cpp
 )
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src/asteroids" FILES ${SRC_ASTEROIDS_FILES})
 
