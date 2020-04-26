@@ -27,6 +27,7 @@ public:
     ~Asteroids();
 
     vector<sSpaceObject *> vecAsteroids;
+    vector<sSpaceObject *> vecBullets;
     Player *player;
 
     void OnEnterFrame(CWindow *window);
@@ -40,7 +41,11 @@ public:
 
     vector<pair<float,float>> vecModelAsteroid;
 
-    const float F=200.0f;
+    bool IsPointInsideCircle(float cx, float cy, float radius, float x, float y)
+    {
+        return Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) < radius;
+    }
+
 protected:
     CWindow *mWindow {nullptr};
 };
