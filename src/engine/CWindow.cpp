@@ -47,7 +47,7 @@ CWindow::CWindow(const char *title, unsigned width, unsigned height, unsigned fl
 //-------------------------------------
 CWindow::~CWindow() {
     if (mWindow) {
-        mfb_close(mWindow);
+        // mfb_close(mWindow);
         mWindow = nullptr;
     }
 }

@@ -38,7 +38,7 @@ public:
     void Render(sSpaceObject &a);
     void RenderPlayer();
     void ResetStatus(int nAsteroids = 1);
-    void CleanseAsteroids();
+    void ClenseAsteroids();
     void RemoveAllBullets();
     sSpaceObject *
     SpawnAsteroid(int size = 64);

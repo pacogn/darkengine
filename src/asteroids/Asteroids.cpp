@@ -63,9 +63,19 @@ Asteroids::OnEnterFrame(CWindow *window) {
     for (int i = 0; i < (int)vecBullets.size(); ++i)
     {
         auto* b = vecBullets[i];
- 
+
         b->x += b->dx * deltaTime;
         b->y += b->dy * deltaTime;
+
+        // delete bullet if out of boundries of the screen
+        // take into account the size of the bullet
+        if (b->x < 0 || (b->x + b->nSize) >= mRenderer.GetWidth() || b->y < 0 || (b->y + b->nSize) >= mRenderer.GetHeight())
+        {
+            delete vecBullets[i];
+            vecBullets.erase(vecBullets.begin() + i);
+            --i;
+            break;
+        }
 
         // Collition detection of the bullet
         for (int j = 0; j < (int)vecAsteroids.size(); ++j)
@@ -112,26 +122,13 @@ Asteroids::OnEnterFrame(CWindow *window) {
 
         // remove offscreen asteroids
         if (vecAsteroids.size() > 0)
-        {
-            CleanseAsteroids();
-        }
+            ClenseAsteroids();
         else
         {
-            //
             // LEVEL COMPLETE!
             player->Reset();
             vecAsteroids.push_back(SpawnAsteroid(64));
             vecAsteroids.push_back(SpawnAsteroid(64));
-        }
-
-        // delete bullet if out of boundries of the screen
-        // take into account the size of the bullet
-        if (b->x < 0 || (b->x + b->nSize) >= mRenderer.GetWidth() || b->y < 0 || (b->y + b->nSize) >= mRenderer.GetHeight())
-        {
-            delete vecBullets[i];
-            vecBullets.erase(vecBullets.begin() + i);
-            --i;
-            break;
         }
 
         // translate bullet into world coordinates
@@ -149,20 +146,23 @@ Asteroids::OnEnterFrame(CWindow *window) {
     player->Render(&mRenderer);
 };
 
-void Asteroids::CleanseAsteroids()
+void Asteroids::ClenseAsteroids()
 {
-    auto i = remove_if(vecAsteroids.begin(), vecAsteroids.end(), [&](sSpaceObject *o) { return (o->x < 0); });
-    if (i != vecAsteroids.end()) {
-        delete *i;
-        vecAsteroids.erase(i);
+    for (size_t i = 0; i < vecAsteroids.size(); ++i)
+    {
+        if (vecAsteroids[i]->x < -99)
+        {
+            delete vecAsteroids[i];
+            vecAsteroids.erase(vecAsteroids.begin() + i);
+        }
     }
 };
 
 void
 Asteroids::ResetStatus(int nAsteroids)
 {
-    for (auto *a : vecAsteroids) a->x = -100;
-    CleanseAsteroids();
+    for (auto *a : vecAsteroids) a->x = -101.01111f;
+    ClenseAsteroids();
 
     player->Reset(mRenderer.GetHalfWidth(), mRenderer.GetHalfHeight());
 
