@@ -152,8 +152,10 @@ Asteroids::OnEnterFrame(CWindow *window) {
 void Asteroids::CleanseAsteroids()
 {
     auto i = remove_if(vecAsteroids.begin(), vecAsteroids.end(), [&](sSpaceObject *o) { return (o->x < 0); });
-    if (i != vecAsteroids.end())
+    if (i != vecAsteroids.end()) {
+        delete *i;
         vecAsteroids.erase(i);
+    }
 };
 
 void
@@ -165,7 +167,7 @@ Asteroids::ResetStatus(int nAsteroids)
     player->Reset(mRenderer.GetHalfWidth(), mRenderer.GetHalfHeight());
 
     for (int i = 0; i <= nAsteroids; ++i)
-        SpawnAsteroid();
+        vecAsteroids.emplace_back(SpawnAsteroid());
 };
 
 sSpaceObject *
