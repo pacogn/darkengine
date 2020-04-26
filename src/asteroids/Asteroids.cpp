@@ -11,17 +11,10 @@ using namespace MindShake;
 Asteroids::Asteroids(CWindow *window) : mRenderer(window->GetRenderer()) {
     mWindow = window;
 
-    vecAsteroids.emplace_back(
-        new sSpaceObject({
-            70.0f, 40.0f,
-            20.0f, -50.0f,
-            (int)64,
-            0.0f
-        })
-    );
+    vecAsteroids.emplace_back(SpawnAsteroid());
 
     player = new Player(
-        mRenderer.GetWidth() / 2.0f, mRenderer.GetHeight() / 2.0f,
+        mRenderer.GetHalfWidth(), mRenderer.GetHalfHeight(),
         0, 0,
         0
     );
@@ -120,14 +113,15 @@ Asteroids::OnEnterFrame(CWindow *window) {
         // remove offscreen asteroids
         if (vecAsteroids.size() > 0)
         {
-            auto i = remove_if(vecAsteroids.begin(), vecAsteroids.end(), [&](sSpaceObject *o) { return (o->x < 0); });
-            if (i != vecAsteroids.end())
-                vecAsteroids.erase(i);
+            CleanseAsteroids();
         }
         else
         {
             //
             // LEVEL COMPLETE!
+            player->Reset();
+            vecAsteroids.push_back(SpawnAsteroid(64));
+            vecAsteroids.push_back(SpawnAsteroid(64));
         }
 
         // delete bullet if out of boundries of the screen
@@ -155,6 +149,45 @@ Asteroids::OnEnterFrame(CWindow *window) {
     player->Render(&mRenderer);
 };
 
+void Asteroids::CleanseAsteroids()
+{
+    auto i = remove_if(vecAsteroids.begin(), vecAsteroids.end(), [&](sSpaceObject *o) { return (o->x < 0); });
+    if (i != vecAsteroids.end())
+        vecAsteroids.erase(i);
+};
+
+void
+Asteroids::ResetStatus(int nAsteroids)
+{
+    for (auto *a : vecAsteroids) a->x = -100;
+    CleanseAsteroids();
+
+    player->Reset(mRenderer.GetHalfWidth(), mRenderer.GetHalfHeight());
+
+    for (int i = 0; i <= nAsteroids; ++i)
+        SpawnAsteroid();
+};
+
+sSpaceObject *
+Asteroids::SpawnAsteroid(int size)
+{
+    float x = (rand() % (mRenderer.GetWidth() - 20)) +20;
+    float y = (rand() % (mRenderer.GetHeight() - 20)) +20;
+
+    return SpawnAsteroid(x, y, size);
+}
+
+sSpaceObject *
+Asteroids::SpawnAsteroid(float x, float y, int size)
+{
+    float angle = ((float)rand() / (float)RAND_MAX) * 6.283185f;
+
+    float dx =  (1.0f / size) * 3000.0f * Sin(angle);
+    float dy = -(1.0f / size) * 3000.0f * Cos(angle);
+
+    return (new sSpaceObject({x, y, dx, dy, size, angle}));
+}
+
 void Asteroids::HandleUserInput()
 {
     uint8_t *keys = const_cast<uint8_t *>(mWindow->GetKeyBuffer());
@@ -165,7 +198,13 @@ void Asteroids::HandleUserInput()
         exit(0);
 
     // Reset
-    if (keys[KB_KEY_R]) player->Reset(mRenderer.GetWidth() / 2.0f, mRenderer.GetHeight() / 2.0f);
+    if (keys[KB_KEY_R])
+    {
+        if (!keys[KB_KEY_LEFT_SHIFT]) ++nLevel;
+        ResetStatus(nLevel);
+
+        return;
+    }
 
     if (!player->dead)
     {
@@ -183,9 +222,12 @@ void Asteroids::HandleUserInput()
         if (keys[KB_KEY_F])
         {
             keys[KB_KEY_F] = false;
+
             vecBullets.emplace_back(new sSpaceObject({
-                player->pos->x, player->pos->y,
-                player->vel->x + (500.0f * Sin(player->angle)), player->vel->y - (500.0f * Cos(player->angle)),
+                player->pos->x,
+                player->pos->y,
+                player->vel->x + (500.0f * Sin(player->angle)),
+                player->vel->y - (500.0f * Cos(player->angle)),
                 5, 5
             }));
         }
