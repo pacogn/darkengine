@@ -202,7 +202,10 @@ void Asteroids::HandleUserInput()
     // Reset
     if (keys[KB_KEY_R])
     {
-        if (!keys[KB_KEY_LEFT_SHIFT]) ++nLevel;
+        keys[KB_KEY_R] = false;
+        if (!keys[KB_KEY_LEFT_SHIFT])
+            ++nLevel;
+
         ResetStatus(nLevel);
 
         return;
