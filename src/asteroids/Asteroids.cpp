@@ -90,7 +90,7 @@ Asteroids::OnEnterFrame(CWindow *window) {
 
                     vecNewAsteroids.push_back(new sSpaceObject({
                         a->x, a->y,
-                        10.0f * Sin(angle1), -10.0f * Cos(angle1),
+                        100.0f * Sin(angle1), -100.0f * Cos(angle1),
                         (int) a->nSize >> 1,
                         (float) (rand()%360)
                     }));
@@ -121,7 +121,9 @@ Asteroids::OnEnterFrame(CWindow *window) {
             vecAsteroids.emplace_back(a);
 
         // delete bullet if out of boundries of the screen
-        if (b->x < 0 || b->x >= mRenderer.GetWidth() || b->y < 0 || b->y >= mRenderer.GetHeight()) {
+        // take into account the size of the bullet
+        if (b->x < 0 || (b->x + b->nSize) >= mRenderer.GetWidth() || b->y < 0 || (b->y + b->nSize) >= mRenderer.GetHeight())
+        {
             delete vecBullets[i];
             vecBullets.erase(vecBullets.begin() + i);
             --i;
@@ -129,7 +131,7 @@ Asteroids::OnEnterFrame(CWindow *window) {
         }
 
         mRenderer.WrapCoordinates(b->x, b->y, b->x, b->y);
-        mRenderer.DrawRectangle(b->x, b->y, 5, 5, 0xCCCCCC);
+        mRenderer.DrawRectangle(b->x, b->y, b->nSize, b->nSize, 0xCCCCCC);
     }
 
     player->Render(&mRenderer);
@@ -159,7 +161,7 @@ Asteroids::HandleUserInput() {
         vecBullets.emplace_back(new sSpaceObject({
             player->pos->x, player->pos->y,
             player->vel->x + (500.0f * Sin(player->angle)), player->vel->y - (500.0f * Cos(player->angle)),
-            0, 0
+            5, 5
         }));
     }
 
