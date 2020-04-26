@@ -115,7 +115,7 @@ void
 CRenderer::DrawWireframeModel(
     const vector<pair<float, float>> &vecModelCoordinates,
     float x, float y,
-    float r,
+    float a,
     float s,
     uint32_t color 
 )
@@ -128,8 +128,8 @@ CRenderer::DrawWireframeModel(
     // 1. Rotate
     for (int i = 0; i < verts; i++)
     {
-        vecTransformedCoordinates[i].first  = vecModelCoordinates[i].first * Cos(r) - vecModelCoordinates[i].second * Sin(r);
-        vecTransformedCoordinates[i].second = vecModelCoordinates[i].first * Sin(r) + vecModelCoordinates[i].second * Cos(r);
+        vecTransformedCoordinates[i].first  = vecModelCoordinates[i].first * Cos(a) - vecModelCoordinates[i].second * Sin(a);
+        vecTransformedCoordinates[i].second = vecModelCoordinates[i].first * Sin(a) + vecModelCoordinates[i].second * Cos(a);
     }
 
     // 2. Scaling
@@ -145,7 +145,6 @@ CRenderer::DrawWireframeModel(
         vecTransformedCoordinates[i].first = vecTransformedCoordinates[i].first + x;
         vecTransformedCoordinates[i].second = vecTransformedCoordinates[i].second + y;
     }
-
 
     for (int i = 0; i < verts+1; i++)
     {

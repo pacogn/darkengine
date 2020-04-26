@@ -15,7 +15,7 @@ Asteroids::Asteroids(CWindow *window) : mRenderer(window->GetRenderer()) {
         new sSpaceObject({
             70.0f, 40.0f,
             20.0f, -50.0f,
-            (int)16,
+            (int)64,
             0.0f
         })
     );
@@ -29,8 +29,8 @@ Asteroids::Asteroids(CWindow *window) : mRenderer(window->GetRenderer()) {
     // anit asteroids;
     int verts = 20;
     for (int i=0; i < verts; i++) {
-        // float radius = ((float)rand() / (float)RAND_MAX) * 6.283185f;
-        float radius = (float)(rand() % 5 + 5);
+        float rnd = ((float)rand() / (float)RAND_MAX);
+        float radius = (rnd/5.0f) + 0.8f;
         float a = ((float)i / (float)verts) * 6.28318f;
 
         vecModelAsteroid.push_back(make_pair(radius * Sin(a), radius * Cos(a)));
@@ -43,12 +43,13 @@ Asteroids::Asteroids(CWindow *window) : mRenderer(window->GetRenderer()) {
 Asteroids::~Asteroids() {
     for (auto *a : vecAsteroids) delete a;
     for (auto *b : vecBullets) delete b;
-    for (auto *na : vecNewAsteroids) delete na;
     delete player;
 };
 
 void
 Asteroids::OnEnterFrame(CWindow *window) {
+    vector<sSpaceObject *> vecNewAsteroids;
+
     mRenderer.Clear(0x00);
 
     HandleUserInput();
@@ -60,7 +61,7 @@ Asteroids::OnEnterFrame(CWindow *window) {
         a->y += a->dy * mWindow->GetDeltaTime();
         mRenderer.WrapCoordinates(a->x, a->y, a->x, a->y);
 
-        mRenderer.DrawWireframeModel(vecModelAsteroid, a->x, a->y, 1, a->nSize, 0xffffff);
+        mRenderer.DrawWireframeModel(vecModelAsteroid, a->x, a->y, a->angle, a->nSize, 0xffffff);
     }
 
     // render bullets
@@ -82,7 +83,7 @@ Asteroids::OnEnterFrame(CWindow *window) {
                 // throw bullet off-screen
                 b->x = -100;
 
-                if (a->nSize > 4)
+                if (a->nSize > 8)
                 {
                     float angle1 = ((float)rand() / (float)RAND_MAX) * 6.283185f;
                     float angle2 = ((float)rand() / (float)RAND_MAX) * 6.283185f;
@@ -91,19 +92,19 @@ Asteroids::OnEnterFrame(CWindow *window) {
                         a->x, a->y,
                         10.0f * Sin(angle1), -10.0f * Cos(angle1),
                         (int) a->nSize >> 1,
-                        0
+                        (float) (rand()%360)
                     }));
 
                     vecNewAsteroids.push_back(new sSpaceObject({
                         a->x, a->y,
                         10.0f * Sin(angle2), -10.0f * Cos(angle2),
                         (int) a->nSize >> 1,
-                        0
+                        (float) (rand()%360)
                     }));
-
-                    // mark hitted asteroid to be destroyed
-                    a->x = -100;
                 }
+
+                // mark hitted asteroid to be destroyed
+                a->x = -100;
             }
         }
 
@@ -126,7 +127,6 @@ Asteroids::OnEnterFrame(CWindow *window) {
             --i;
             break;
         }
-
 
         mRenderer.WrapCoordinates(b->x, b->y, b->x, b->y);
         mRenderer.DrawRectangle(b->x, b->y, 5, 5, 0xCCCCCC);

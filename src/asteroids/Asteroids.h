@@ -28,7 +28,6 @@ public:
 
     vector<sSpaceObject *> vecAsteroids;
     vector<sSpaceObject *> vecBullets;
-    vector<sSpaceObject *> vecNewAsteroids;
     Player *player;
 
     void OnEnterFrame(CWindow *window);
