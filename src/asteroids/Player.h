@@ -16,6 +16,8 @@ public:
     void Update(double deltaTime);
     void Render(CRenderer *renderer);
     void Reset(float x = 0.0f, float y = 0.0f);
+    bool isDead();
+    bool Hit() { --lives; return isDead(); };
 
     CVector2 *pos;
     CVector2 *vel;
@@ -23,6 +25,8 @@ public:
     uint32_t color = 0x00FF00;
     float acc=200.0f;
     float steerDegrees=5.0f;
+    int lives = 3;
+    bool dead = false;
 
 private:
     vector<pair<float, float>> vecModelShip = {

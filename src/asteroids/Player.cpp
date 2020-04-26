@@ -44,6 +44,18 @@ void Player::Render(CRenderer *renderer)
     renderer->DrawWireframeModel(vecModelShip, pos->x, pos->y, angle, 5.0f, color);
 }
 
+bool Player::isDead()
+{
+    if (dead) return true;
+
+    if (lives < 1) {
+        dead = true;
+        color = 0xFF0000;
+    }
+
+    return dead;
+};
+
 void Player::Reset(float x, float y)
 {
     pos->x = x;
@@ -51,4 +63,6 @@ void Player::Reset(float x, float y)
     vel->x = 0.0f;
     vel->y = 0.0f;
     angle = 0.0f;
+    color = 0x00FF00;
+    dead = false;
 }
