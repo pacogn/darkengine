@@ -29,6 +29,7 @@ public:
     vector<sSpaceObject *> vecAsteroids;
     vector<sSpaceObject *> vecBullets;
     Player *player;
+    int nLevel = 0;
 
     void OnEnterFrame(CWindow *window);
 
@@ -36,6 +37,12 @@ public:
     void Animate(sSpaceObject &a);
     void Render(sSpaceObject &a);
     void RenderPlayer();
+    void ResetStatus(int nAsteroids = 1);
+    void ClenseAsteroids();
+    void RemoveAllBullets();
+    sSpaceObject *
+    SpawnAsteroid(int size = 64);
+    sSpaceObject *SpawnAsteroid(float x, float y, int size = 64);
 
     CRenderer &mRenderer;
 
