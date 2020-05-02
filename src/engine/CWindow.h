@@ -41,13 +41,14 @@ public:
 
 // Getters
 public:
-    uint32_t    GetFPS() const              { return mFPS;          }
-    double      GetDeltaTime() const        { return mTimeDelta;    }
-    double      GetTimeDelta() const        { return mTimeDelta;    }
-    double      GetTimeClear() const        { return mTimeClear;    }
-    double      GetTimeUser() const         { return mTimeUser;     }
-    double      GetTimeUpdateWin() const    { return mTimeUpdateWin; }
-    double      GetTimeLastFrame() const    { return mTimeFrame;    }
+    uint32_t    GetFPS() const              { return mFPS;              }
+    double      GetTime()                   { return mTimer.GetTime();  }
+    double      GetDeltaTime() const        { return mTimeDelta;        }
+    double      GetTimeDelta() const        { return mTimeDelta;        }
+    double      GetTimeClear() const        { return mTimeClear;        }
+    double      GetTimeUser() const         { return mTimeUser;         }
+    double      GetTimeUpdateWin() const    { return mTimeUpdateWin;    }
+    double      GetTimeLastFrame() const    { return mTimeFrame;        }
 
     const uint8_t *GetKeyBuffer() const     { return mfb_get_key_buffer(mWindow); }
     const uint8_t *GetMouseData(int &x, int &y, float &scrollX, float &scrollY);

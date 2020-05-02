@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <cstdint>
 #include <Common/Math/math_funcs.h>
+
 using namespace std;
 
 class CMesh;

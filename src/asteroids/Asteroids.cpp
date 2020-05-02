@@ -1,4 +1,5 @@
 #include "Asteroids.h"
+#include "Player.h"
 #include <engine/CWindow.h>
 #include <engine/CRenderer.h>
 #include <CRendererAsteroids.h>
@@ -19,14 +20,14 @@ Asteroids::Asteroids(CWindow *window) : mRenderer(window->GetRenderer()) {
         0
     );
 
-    // anit asteroids;
+    // init asteroids;
     int verts = 20;
     for (int i=0; i < verts; i++) {
         float rnd = ((float)rand() / (float)RAND_MAX);
         float radius = (rnd/5.0f) + 0.8f;
         float a = ((float)i / (float)verts) * 6.28318f;
 
-        vecModelAsteroid.push_back(make_pair(radius * Sin(a), radius * Cos(a)));
+        vecModelAsteroid.emplace_back(radius * Sin(a), radius * Cos(a));
     }
 
     // mWindow->AddOnEnterFrame(this, &Asteroids::OnEnterFrame);
@@ -34,8 +35,12 @@ Asteroids::Asteroids(CWindow *window) : mRenderer(window->GetRenderer()) {
 };
 
 Asteroids::~Asteroids() {
-    for (auto *a : vecAsteroids) delete a;
-    for (auto *b : vecBullets) delete b;
+    vecAsteroids.clear();
+    vecBullets.clear();
+    for (auto *a : poolAsteroids) delete a;
+    for (auto *b : poolBullets)   delete b;
+    poolAsteroids.clear();
+    poolBullets.clear();
     delete player;
 };
 
@@ -46,6 +51,7 @@ Asteroids::OnEnterFrame(CWindow *window) {
     mRenderer.Clear(0x00);
 
     HandleUserInput();
+
     float deltaTime = mWindow->GetDeltaTime();
 
     // render asteroids
@@ -60,59 +66,45 @@ Asteroids::OnEnterFrame(CWindow *window) {
     }
 
     // render bullets
-    for (int i = 0; i < (int)vecBullets.size(); ++i)
+    for (auto *b : vecBullets)
     {
-        auto* b = vecBullets[i];
-
         b->x += b->dx * deltaTime;
         b->y += b->dy * deltaTime;
 
-        // delete bullet if out of boundries of the screen
+        // delete bullet if out of boundaries of the screen
         // take into account the size of the bullet
         if (b->x < 0 || (b->x + b->nSize) >= mRenderer.GetWidth() || b->y < 0 || (b->y + b->nSize) >= mRenderer.GetHeight())
         {
-            delete vecBullets[i];
-            vecBullets.erase(vecBullets.begin() + i);
-            --i;
-            break;
+            b->isDead = true;
+            continue;
         }
 
-        // Collition detection of the bullet
-        for (int j = 0; j < (int)vecAsteroids.size(); ++j)
+        // Collision detection of the bullet
+        for (auto* a : vecAsteroids)
         {
-            auto* a = vecAsteroids[j];
-
             // Check if we hit the asteroid
             if (IsPointInsideCircle(a->x, a->y, a->nSize, b->x, b->y))
             {
                 // delete bullet, it will get removed when purging bullets off the screen
-                b->x = -100; // delete bullet, it will get removed when purging bullets off the screen
+                b->isDead = true; // delete bullet, it will get removed when purging bullets off the screen
 
                 // if asteroid is big enough, split it
                 if (a->nSize > 8)
                 {
                     // calculate random angles of ejection... apply physics here!
-                    float angle1 = ((float)rand() / (float)RAND_MAX) * 6.283185f;
-                    float angle2 = ((float)rand() / (float)RAND_MAX) * 6.283185f;
+                    //float angle1 = ((float)rand() / (float)RAND_MAX) * 6.283185f;
+                    //float angle2 = ((float)rand() / (float)RAND_MAX) * 6.283185f;
+                    float angle1 = a->angle + 90;
+                    float angle2 = a->angle - 90;
 
-                    // creating two new ones
-                    vecNewAsteroids.push_back(new sSpaceObject({
-                        a->x, a->y,
-                        (1.0f/a->nSize)*3000.0f * Sin(angle1), -(1.0f/a->nSize)*3000.0f * Cos(angle1),
-                        (int) a->nSize >> 1,
-                        (float) (rand()%360)
-                    }));
-
-                    vecNewAsteroids.push_back(new sSpaceObject({
-                        a->x, a->y,
-                        (1.0f/a->nSize)*3000.0f * Sin(angle2), -(1.0f/a->nSize)*3000.0f * Cos(angle2),
-                        (int) a->nSize >> 1,
-                        (float) (rand()%360)
-                    }));
+                    vecNewAsteroids.emplace_back(SpawnAsteroid(a->x, a->y, angle1, a->nSize >> 1));
+                    vecNewAsteroids.emplace_back(SpawnAsteroid(a->x, a->y, angle2, a->nSize >> 1));
                 }
 
                 // when done, we mark the original asteroid to be deleted
-                a->x = -100;
+                a->isDead = true;
+                b->isDead = true;
+                break;
             }
         }
 
@@ -120,21 +112,31 @@ Asteroids::OnEnterFrame(CWindow *window) {
         for (auto &a : vecNewAsteroids) 
             vecAsteroids.emplace_back(a);
 
-        // remove offscreen asteroids
-        if (vecAsteroids.size() > 0)
-            ClenseAsteroids();
+        // remove off screen asteroids
+        if (!vecAsteroids.empty())
+        {
+            // Clean dead asteroids
+            vecAsteroids.erase([](const auto &v) {
+                return v->isDead;
+            });
+        }
         else
         {
             // LEVEL COMPLETE!
             player->Reset();
-            vecAsteroids.push_back(SpawnAsteroid(64));
-            vecAsteroids.push_back(SpawnAsteroid(64));
+            vecAsteroids.emplace_back(SpawnAsteroid(64));
+            vecAsteroids.emplace_back(SpawnAsteroid(64));
         }
 
         // translate bullet into world coordinates
         mRenderer.WrapCoordinates(b->x, b->y, b->x, b->y);
         mRenderer.DrawRectangle(b->x, b->y, b->nSize, b->nSize, 0xCCCCCC);
     }
+
+    // Clean dead bullets
+    vecBullets.erase([](const auto &v) {
+        return v->isDead;
+    });
 
     // Check ship collision with asteroids
     for (auto &a : vecAsteroids) {
@@ -146,24 +148,9 @@ Asteroids::OnEnterFrame(CWindow *window) {
     player->Render(&mRenderer);
 };
 
-void Asteroids::ClenseAsteroids()
-{
-    for (size_t i = 0; i < vecAsteroids.size(); ++i)
-    {
-        if (vecAsteroids[i]->x < -99)
-        {
-            delete vecAsteroids[i];
-            vecAsteroids.erase(vecAsteroids.begin() + i);
-        }
-    }
-};
-
 void
-Asteroids::ResetStatus(int nAsteroids)
-{
-    for (auto *a : vecAsteroids) a->x = -101.01111f;
-    ClenseAsteroids();
-
+Asteroids::ResetStatus(int nAsteroids) {
+    vecAsteroids.clear();
     player->Reset(mRenderer.GetHalfWidth(), mRenderer.GetHalfHeight());
 
     for (int i = 0; i <= nAsteroids; ++i)
@@ -171,29 +158,72 @@ Asteroids::ResetStatus(int nAsteroids)
 };
 
 sSpaceObject *
-Asteroids::SpawnAsteroid(int size)
-{
-    float x = (rand() % (mRenderer.GetWidth() - 20)) +20;
-    float y = (rand() % (mRenderer.GetHeight() - 20)) +20;
+Asteroids::SpawnAsteroid(int size) {
+    float x     = (rand() % (mRenderer.GetWidth()  - 20)) + 20;
+    float y     = (rand() % (mRenderer.GetHeight() - 20)) + 20;
+    float angle = ((float) rand() / (float) RAND_MAX) * 6.283185f;
 
-    return SpawnAsteroid(x, y, size);
+    return SpawnAsteroid(x, y, angle, size);
 }
 
 sSpaceObject *
-Asteroids::SpawnAsteroid(float x, float y, int size)
-{
-    float angle = ((float)rand() / (float)RAND_MAX) * 6.283185f;
+Asteroids::SpawnAsteroid(float x, float y, float angle, int size) {
+    sSpaceObject    *a;
 
+    int32_t idx = poolAsteroids.find([](const auto &v) -> bool {
+        return v->isDead;
+    });
+    if(idx != -1) {
+        a = poolAsteroids[idx];
+    }
+    else {
+        a = poolAsteroids.emplace_back(new sSpaceObject()).back();
+    }
     float dx =  (1.0f / size) * 3000.0f * Sin(angle);
     float dy = -(1.0f / size) * 3000.0f * Cos(angle);
+    *a = { x, y, dx, dy, size, angle, false };
 
-    return (new sSpaceObject({x, y, dx, dy, size, angle}));
+    return a;
 }
 
-void Asteroids::HandleUserInput()
-{
+sSpaceObject *
+Asteroids::SpawnBullet() {
+    sSpaceObject *b;
+
+    int32_t idx = poolBullets.find([](const auto &v) -> bool {
+        return v->isDead;
+    });
+    if (idx != -1) {
+        b = poolBullets[idx];
+    }
+    else {
+        b = poolBullets.emplace_back(new sSpaceObject()).back();
+    }
+
+    *b = { 
+        player->pos->x,
+        player->pos->y,
+        player->vel->x + (500.0f * Sin(player->angle)),
+        player->vel->y - (500.0f * Cos(player->angle)),
+        5, 5
+    };
+
+    return b;
+}
+
+bool 
+Asteroids::IsPointInsideCircle(float cx, float cy, float radius, float x, float y) {
+    return Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) < radius;
+}
+
+void 
+Asteroids::HandleUserInput() {
+    static float lastBulletTime = 0;
+    const float  fireRate = 0.25f;
     uint8_t *keys = const_cast<uint8_t *>(mWindow->GetKeyBuffer());
-    float deltaTime = mWindow->GetDeltaTime();
+
+    float   deltaTime = mWindow->GetDeltaTime();
+    float   time      = mWindow->GetTime();
 
     // Quit
     if (keys[KB_KEY_Q])
@@ -214,9 +244,9 @@ void Asteroids::HandleUserInput()
     if (!player->dead)
     {
         // Steer
-        if (keys[KB_KEY_J])
+        if (keys[KB_KEY_J] || keys[KB_KEY_LEFT])
             player->SteerLeft(deltaTime);
-        if (keys[KB_KEY_K])
+        if (keys[KB_KEY_K] || keys[KB_KEY_RIGHT])
             player->SteerRight(deltaTime);
 
         // Thrust
@@ -224,17 +254,13 @@ void Asteroids::HandleUserInput()
             player->Thrust(deltaTime);
 
         // Fire!
-        if (keys[KB_KEY_F])
+        if(lastBulletTime + fireRate < time) 
         {
-            keys[KB_KEY_F] = false;
-
-            vecBullets.emplace_back(new sSpaceObject({
-                player->pos->x,
-                player->pos->y,
-                player->vel->x + (500.0f * Sin(player->angle)),
-                player->vel->y - (500.0f * Cos(player->angle)),
-                5, 5
-            }));
+            if (keys[KB_KEY_F])
+            {
+                lastBulletTime = time;
+                vecBullets.emplace_back(SpawnBullet());
+            }
         }
     }
 

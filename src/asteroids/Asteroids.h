@@ -1,58 +1,60 @@
 #pragma once
 
 #include <engine/CRenderer.h>
-#include <vector>
+#include <Common/Core/containers/TVector.h>
 #include <cstdint>
-
-#include <Player.h>
+#include <memory>
 
 class CWindow;
+class Player;
 
-using std::vector;
+using MindShake::TVector;
+using std::pair;
 
+//-------------------------------------
 struct sSpaceObject
 {
-    float x;
-    float y;
-    float dx;
-    float dy;
-    int nSize;
-    float angle;
+    float   x;
+    float   y;
+    float   dx;
+    float   dy;
+    int     nSize;
+    float   angle;
+    bool    isDead;
 };
 
+//-------------------------------------
 class Asteroids
 {
 public:
-    Asteroids(CWindow *window);
-    ~Asteroids();
+                    Asteroids(CWindow *window);
+                    ~Asteroids();
 
-    vector<sSpaceObject *> vecAsteroids;
-    vector<sSpaceObject *> vecBullets;
-    Player *player;
-    int nLevel = 0;
+    void            OnEnterFrame(CWindow *window);
 
-    void OnEnterFrame(CWindow *window);
+    void            HandleUserInput();
+    void            Animate(sSpaceObject &a);
+    void            Render(sSpaceObject &a);
+    void            RenderPlayer();
+    void            ResetStatus(int nAsteroids = 1);
+    void            RemoveAllBullets();
+    sSpaceObject *  SpawnAsteroid(int size = 64);
+    sSpaceObject *  SpawnAsteroid(float x, float y, float speed, int size = 64);
+    sSpaceObject *  SpawnBullet();
 
-    void HandleUserInput();
-    void Animate(sSpaceObject &a);
-    void Render(sSpaceObject &a);
-    void RenderPlayer();
-    void ResetStatus(int nAsteroids = 1);
-    void ClenseAsteroids();
-    void RemoveAllBullets();
-    sSpaceObject *
-    SpawnAsteroid(int size = 64);
-    sSpaceObject *SpawnAsteroid(float x, float y, int size = 64);
-
-    CRenderer &mRenderer;
-
-    vector<pair<float,float>> vecModelAsteroid;
-
-    bool IsPointInsideCircle(float cx, float cy, float radius, float x, float y)
-    {
-        return Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) < radius;
-    }
+    bool            IsPointInsideCircle(float cx, float cy, float radius, float x, float y);
 
 protected:
-    CWindow *mWindow {nullptr};
+    CWindow                 *mWindow {nullptr};
+
+    TVector<sSpaceObject *> poolAsteroids;
+    TVector<sSpaceObject *> vecAsteroids;
+    TVector<sSpaceObject *> poolBullets;
+    TVector<sSpaceObject *> vecBullets;
+    Player                  *player { nullptr };
+    int                     nLevel = 0;
+
+    CRenderer               &mRenderer;
+
+    vector<pair<float, float>> vecModelAsteroid;
 };

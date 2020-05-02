@@ -121,7 +121,7 @@ CRenderer::DrawWireframeModel(
 )
 {
     vector<pair<float, float>> vecTransformedCoordinates;
-    int verts = vecModelCoordinates.size();
+    size_t verts = vecModelCoordinates.size();
     vecTransformedCoordinates.resize(verts);
 
     // Order matters
